@@ -1,58 +1,21 @@
-var constraints = {
-  video: true, 
-  audio: false //set to true to enable audio
-};
+var video = document.querySelector('video')
 
-getUserMedia(
-  constraints, 
-  onMediaStream, 
-  noMediaStream
-);
+navigator.mediaDevices.getUserMedia({
+  video: true,
+  audio: false // set to true to enable audio
+}).then(function (mediaStream) {
+  video.src = window.URL.createObjectURL(mediaStream)
+  video.onloadedmetadata = function () {
+    video.play()
+  }
+}).catch(function (error) {
+  console.error('No media stream', error)
+})
 
-function onMediaStream(stream) {
-  localVideo = document.getElementById("localVideo");
-  
-  localStream = stream;
-  attachMediaStream(localVideo, stream);
-  
-  localVideo.play();
-}
+var buttons = document.querySelectorAll('button')
 
-function noMediaStream (error) {
-  console.log("No media stream for us.", error);
-}
-
-var ul = document.getElementById("filters"); 
-
-ul.addEventListener("click", function(e) {
-  console.log("e: ", e);
-  
-  var filter = e.target.id;
-  
-  var filters = {
-    "NoFilter": function() {
-      console.log("NoFilter");
-      localVideo.className = "";
-    },
-    
-    "Willow": function() {
-      console.log("Willow");
-      localVideo.className = "ig-willow";
-    },
-    
-    "Earlybird": function() {
-      console.log("Earlybird");
-      localVideo.className = "ig-earlybird";
-    },
-    
-    "Mayfair": function() {
-      console.log("Mayfair");
-      localVideo.className = "ig-mayfair";
-    },
-    
-    "Amaro": function() {
-      console.log("Amaro");
-      localVideo.className = "ig-amaro";
-    }
-  }[filter]();
-});
+Array.prototype.forEach.call(buttons, function (button) {
+  button.addEventListener('click', function (e) {
+    video.className = e.target.getAttribute('data-filter')
+  })
+})
